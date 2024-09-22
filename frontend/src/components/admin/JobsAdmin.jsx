@@ -12,11 +12,12 @@ const JobsAdmin = () => {
   const [inputSearch, setinputSearch] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  dispatch(setSingleJob(null))
+  
   UseGetAllJobsAdmin();
 
   useEffect(() => {
     dispatch(setSearchJobByText(inputSearch))
+    dispatch(setSingleJob(null))
   }, [inputSearch])
 
   return (

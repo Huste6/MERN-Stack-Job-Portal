@@ -139,6 +139,41 @@ export const getJobById = async (req, res) => {
 }
 
 //admin
+//[GET] /api/v1/job/getAdmin/:id
+export const getJobByIdAdmin = async (req, res) => {
+    try {
+        const jobId = req.params.id;
+        const userId = req.id;
+        const job = await Job.findOne({
+            _id: jobId,
+            created_by: userId
+        }).populate(
+            [{
+                    path: 'applications',
+                    select: "applicant"
+                },
+                {
+                    path: 'company',
+                    select: "name"
+                }
+            ]
+        );
+        if (!job) {
+            return res.status(404).json({
+                message: "Jobs not found!",
+                success: false
+            })
+        }
+        return res.status(200).json({
+            job,
+            success: true
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//admin
 //[GET] /api/v1/job/getAdminJob
 export const getAdminJobs = async (req, res) => {
     try {
@@ -158,6 +193,56 @@ export const getAdminJobs = async (req, res) => {
         return res.status(200).json({
             jobs,
             success: true
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//admin 
+//[PATCH] /api/v1/job/updateJob/:id
+export const EditJob = async (req, res) => {
+    try {
+        const {
+            companyID,
+            description,
+            experienceLevel,
+            jobType,
+            location,
+            position,
+            requirements,
+            salary,
+            title
+        } = req.body;
+        const jobId = req.params.id;
+        const job = await Job.findOne({
+            _id: jobId
+        });
+        if (!job) {
+            return res.status(404).json({
+                message: "Job not found!",
+                success: false
+            })
+        }
+        const updateData = {
+            companyID: companyID ? companyID : job?.companyID,
+            description: description ? description : job?.description,
+            experienceLevel: experienceLevel ? experienceLevel : job?.experienceLevel,
+            jobType: jobType ? jobType : job?.jobType,
+            location: location ? location : job?.location,
+            position: position ? position : job?.position,
+            requirements: requirements ? requirements : job?.requirements,
+            salary: salary ? salary : job?.salary,
+            title: title ? title : job?.title,
+        }
+        console.log(updateData);
+        const jobUpdate = await Job.findByIdAndUpdate(jobId, updateData, {
+            new: true
+        });
+        return res.status(200).json({
+            message: "Job infomation updated",
+            success: true,
+            job: jobUpdate
         })
     } catch (error) {
         console.log(error);
