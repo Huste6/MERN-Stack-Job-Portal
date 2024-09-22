@@ -12,7 +12,6 @@ import { ToastAction } from '../ui/toast';
 import { toast } from '@/hooks/use-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser, setLoading } from '../redux/authSlice';
-import store from '../redux/store';
 import { Loader2 } from 'lucide-react';
 
 const Login = () => {
@@ -119,6 +118,7 @@ const Login = () => {
                             </div>
                         </RadioGroup>
                         {errors.role && <span className="text-red-500">Vui lòng chọn vai trò</span>}
+                        <a href='/forgot-password' className='text-blue-600 text-sm'>Quên mật khẩu?</a>
                     </div>
                     {loading ? (
                         <Button className='w-full my-4'><Loader2 className='mr-2 h-4 w-4 animate-spin'/> Xin đợi 1 chút</Button>

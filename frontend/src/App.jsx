@@ -16,6 +16,9 @@ import Applicants from './components/admin/Applicants'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import ProtectedRouteUser from './components/ProtectedRouteUser'
 import EditJob from './components/admin/EditJob'
+import ForgotPassword from './components/auth/ForgotPassword'
+import ForgotPasswordOtp from './components/auth/ForgotPasswordOtp'
+import ResetPassword from './components/auth/ResetPassword'
 
 const appRouter = createBrowserRouter([
   {
@@ -29,6 +32,18 @@ const appRouter = createBrowserRouter([
   {
     path: '/signup',
     element: <SignUp />
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPassword />
+  },
+  {
+    path: '/forgot-password/otp',
+    element: <ForgotPasswordOtp />
+  },
+  {
+    path: '/reset-password/:email',
+    element: <ResetPassword />
   },
   {
     path: '/jobs',
