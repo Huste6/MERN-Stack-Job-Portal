@@ -9,12 +9,18 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import UseGetJob from '../hooks/UseGetJob';
 import { toast } from '@/hooks/use-toast';
 import { ToastAction } from '../ui/toast';
+import { setSingleJob } from '../redux/jobSlice';
 
 const EditJob = () => {
+    const dispatch = useDispatch();
+    const params = useParams();
+    const jobId = params.id;
+    UseGetJob(jobId);
+    
     const {
         register,
         handleSubmit,
@@ -22,25 +28,22 @@ const EditJob = () => {
         formState: { errors }
     } = useForm();
     const navigate = useNavigate();
-    const params = useParams();
-    const jobId = params.id;
-    UseGetJob(jobId);
     const { singleJob = {} } = useSelector(store => store.job);
     const { AllCompanies = [] } = useSelector(store => store.company);
+    const [loading, setLoading] = useState(false);
+    setValue('title', singleJob?.title);
+    setValue('description', singleJob?.description);
+    setValue('salary', singleJob?.salary);
+    setValue('location', singleJob?.location);
+    setValue('experience', singleJob?.experienceLevel);
+    setValue('position', singleJob?.position);
+    setValue('jobType', singleJob?.jobType);
+    setValue('companyID', singleJob?.company?._id);
+    setValue('requirements', singleJob?.requirements.join(', '));
 
-    useEffect(() => {
-        setValue('title', singleJob?.title);
-        setValue('description', singleJob?.description);
-        setValue('salary', singleJob?.salary);
-        setValue('location', singleJob?.location);
-        setValue('experience', singleJob?.experienceLevel);
-        setValue('position', singleJob?.position);
-        setValue('jobType', singleJob?.jobType); 
-        setValue('companyID', singleJob?.company?._id); 
-        setValue('requirements', singleJob?.requirements.join(', '));
-    }, [setValue])
     const onSubmit = async (data) => {
         try {
+            setLoading(true);
             data.requirements = data.requirements.split(',').map(requirement => requirement.trim());
             const res = await axios.patch(`${JOP_API_END_POINT}/updateJob/${jobId}`, data, { withCredentials: true });
             if (res.data.success) {
@@ -62,16 +65,21 @@ const EditJob = () => {
                 status: "error",
                 action: <ToastAction altText="Try again">Try again</ToastAction>,
             });
+        } finally {
+            setLoading(false);
         }
     };
-
+    const handleReturn = () => {
+        navigate('/admin/jobs');
+        dispatch(setSingleJob(null));
+    }
     return (
         <div>
             <Navbar />
             <div className='max-w-2xl mx-auto my-10 border shadow-sm p-14'>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className='flex items-center mb-5'>
-                        <Button variant='outline' className='flex items-center gap-2' onClick={() => navigate('/admin/jobs')}>
+                        <Button variant='outline' className='flex items-center gap-2' onClick={() => handleReturn()}>
                             <ArrowLeft />
                             <span>Back</span>
                         </Button>
@@ -174,7 +182,13 @@ const EditJob = () => {
                             />
                         </div>
                     </div>
-                    <Button type='submit' className='w-full mt-8'>Update</Button>
+                    <Button type='submit' className='w-full mt-8' disabled={loading}>
+                        {loading ? (
+                            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                        ) : (
+                            'Update'
+                        )}
+                    </Button>
                 </form>
             </div>
         </div>

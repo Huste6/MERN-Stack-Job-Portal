@@ -235,7 +235,6 @@ export const EditJob = async (req, res) => {
             salary: salary ? salary : job?.salary,
             title: title ? title : job?.title,
         }
-        console.log(updateData);
         const jobUpdate = await Job.findByIdAndUpdate(jobId, updateData, {
             new: true
         });

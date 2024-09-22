@@ -19,7 +19,8 @@ const UseGetJob = (jobId) => {
             }
         };
         fetchApiGetJob();
-    }, [jobId]);
+    }, [jobId, dispatch]);
+    return null;
 }
 
 export default UseGetJob;
