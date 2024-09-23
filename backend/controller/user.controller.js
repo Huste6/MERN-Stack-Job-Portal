@@ -297,12 +297,12 @@ export const forgotPasswordPostOtp = async (req, res) => {
 }
 
 //[POST] /api/v1/user/password/reset
-export const resetPassword = async (req,res) => {
+export const resetPassword = async (req, res) => {
     const {
         email,
         password
     } = req.body;
-    if(!email || !password) {
+    if (!email || !password) {
         return res.status(400).json({
             message: 'Something is missing!',
             success: false
@@ -318,7 +318,7 @@ export const resetPassword = async (req,res) => {
         })
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    if(hashedPassword === user.password) {
+    if (hashedPassword === user.password) {
         return res.status(400).json({
             message: 'password already exists',
             success: false
@@ -329,5 +329,38 @@ export const resetPassword = async (req,res) => {
     return res.status(200).json({
         message: 'Reset password successfully!',
         success: true
+    })
+}
+
+//[POST] /profile/update/img
+export const updateImageProfile = async (req, res) => {
+    const file = req.file;
+    const userId = req.id;
+    const user = await User.findOne({_id: userId});
+    if(!file){
+        return res.status(401).json({
+            message: 'Image not found!',
+            success: false
+        })
+    }
+    if(!user){
+        return res.status(401).json({
+            message: 'User not found!',
+            success: false
+        })
+    }
+    let cloudResponse;
+    if (file) {
+        const fileUri = getDataUri(file);
+        cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    }
+    if (cloudResponse) {
+        user.profile.profilePhoto = cloudResponse.secure_url;
+    }
+    await user.save();
+    return res.status(200).json({
+        message: 'Update image successfully!',
+        success: true,
+        user
     })
 }

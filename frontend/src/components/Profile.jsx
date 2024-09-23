@@ -1,37 +1,100 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Navbar from './share/Navbar'
-import { Avatar, AvatarImage } from './ui/avatar'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from './ui/button';
-import { Contact, Mail, Pen } from 'lucide-react';
+import { Contact, ImageUp, Mail, Pen } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Label } from './ui/label';
 import AppliedJobTable from './AppliedJobTable';
 import UpdateProfileDialog from './UpdateProfileDialog';
 import UseGetAllAppliedJob from './hooks/UseGetAllAppliedJob';
+import { Image } from 'antd';
+import axios from 'axios';
+import { USER_API_END_POINT } from './utils/constant';
+import { toast } from '@/hooks/use-toast';
+import { ToastAction } from './ui/toast';
+import { setAuthUser } from './redux/authSlice';
 
 const isResume = true;
 
 const Profile = () => {
     const { user } = useSelector(store => store.auth);
-    const [ open,setOpen ] = useState(false);
+    const [open, setOpen] = useState(false);
     UseGetAllAppliedJob();
-    
+    const dispatch = useDispatch();
+    const fileInputRef = useRef(null); //lay ra o input
+    const handleButtonClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file)
+            const fetchApiUploadImage = async () => {
+                try {
+                    const res = await axios.post(`${USER_API_END_POINT}/profile/update/img`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                        withCredentials: true
+                    })
+                    if (res.data.success) {
+                        toast({
+                            title: res.data.message,
+                            status: "success",
+                            action: (
+                                <ToastAction altText="OK">
+                                    OK
+                                </ToastAction>
+                            ),
+                        });
+                        dispatch(setAuthUser(res.data.user))
+                    }
+                } catch (error) {
+                    console.error(error);
+                    toast({
+                        title: error.response?.data?.message || 'Cập nhật thất bại',
+                        status: "error",
+                        action: <ToastAction altText="Try again">Try again</ToastAction>,
+                    });
+                }
+            }
+            fetchApiUploadImage();
+        }
+    };
     return (
         <div>
             <Navbar />
             <div className='max-w-7xl mx-auto bg-white border border-gray-100 rounded-2xl shadow-xl my-5 p-8'>
                 <div className='flex justify-between'>
                     <div className='flex items-center gap-4'>
-                        <Avatar className='h-24 w-24 object-cover rounded-full'>
-                            <AvatarImage src={user.profile.profilePhoto ? (user.profile.profilePhoto) : ("https://github.com/shadcn.png")} />
-                        </Avatar>
+                        <div className='flex items-center flex-col'>
+                            <Image
+                                width={100}
+                                height={100}
+                                className='object-cover rounded-full'
+                                src={user.profile.profilePhoto ? (user.profile.profilePhoto) : ("https://github.com/shadcn.png")}
+                            />
+                            <Button variant='outline' className='gap-2 mt-5' onClick={handleButtonClick}>
+                                <ImageUp />
+                                <span>Upload image</span>
+                            </Button>
+                            <input
+                                type='file'
+                                accept='image/*'
+                                ref={fileInputRef}
+                                style={{ display: 'none' }}
+                                onChange={handleFileChange}
+                            />
+                        </div>
                         <div>
                             <h1 className='font-bold text-xl'>{user.fullName}</h1>
                             <p>{user?.profile?.bio}</p>
                         </div>
                     </div>
-                    <Button onClick={()=>setOpen(true)} variant="outline" className='text-right'><Pen /></Button>
+                    <Button onClick={() => setOpen(true)} variant="outline" className='text-right'><Pen /></Button>
                 </div>
                 <div className='my-5'>
                     <div className='flex items-center gap-3 my-2'>
