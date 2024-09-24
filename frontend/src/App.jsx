@@ -19,6 +19,8 @@ import EditJob from './components/admin/EditJob'
 import ForgotPassword from './components/auth/ForgotPassword'
 import ForgotPasswordOtp from './components/auth/ForgotPasswordOtp'
 import ResetPassword from './components/auth/ResetPassword'
+import CreateUserAdmin from './components/admin/CreateUserAdmin'
+import ListUserAdmin from './components/admin/ListUserAdmin'
 
 const appRouter = createBrowserRouter([
   {
@@ -89,6 +91,14 @@ const appRouter = createBrowserRouter([
   {
     path: '/admin/jobs/:id/applicants',
     element: <ProtectedRoute><Applicants /></ProtectedRoute>
+  },
+  {
+    path: '/admin/createUser',
+    element: <ProtectedRoute><CreateUserAdmin /></ProtectedRoute>
+  },
+  {
+    path: '/admin/listUser',
+    element: <ProtectedRoute><ListUserAdmin /></ProtectedRoute>
   }
 ])
 

@@ -2,7 +2,7 @@ import { Popover } from '@radix-ui/react-popover'
 import React from 'react'
 import { PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Avatar, AvatarImage } from '../ui/avatar'
-import { LogOut, User2 } from 'lucide-react'
+import { BookUser, LogOut, User2, UserRoundPlus } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -100,6 +100,20 @@ const Navbar = () => {
                           <User2 />
                           <Button variant="link"><Link to="/profile">Xem thông tin cá nhân</Link></Button>
                         </div>
+                      )
+                    }
+                    {
+                      user && user.role !== 'student' && (
+                        <>
+                          <div className='flex w-fit items-center gap-2 cursor-pointer mt-2'>
+                            <BookUser />
+                            <Button variant="link"><Link to="/admin/listUser">Danh sách tài khoản admin</Link></Button>
+                          </div>
+                          <div className='flex w-fit items-center gap-2 cursor-pointer mt-2'>
+                            <UserRoundPlus />
+                            <Button variant="link"><Link to="/admin/createUser">Tạo mới tài khoản admin</Link></Button>
+                          </div>
+                        </>
                       )
                     }
                     <div className='flex w-fit items-center gap-2 cursor-pointer mt-2'>

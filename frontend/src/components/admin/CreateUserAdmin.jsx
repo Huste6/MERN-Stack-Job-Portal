@@ -1,28 +1,24 @@
-import React, { useEffect } from 'react';
-import Navbar from '../share/Navbar';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { RadioGroup } from '../ui/radio-group';
-import { Button } from '../ui/button';
-import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import { USER_API_END_POINT } from '../utils/constant';
-import { toast } from '@/hooks/use-toast';
-import { ToastAction } from '../ui/toast';
-import { useDispatch, useSelector } from 'react-redux';
-import { setLoading } from '../redux/authSlice';
-import { Loader2 } from 'lucide-react';
+import React, { useState } from 'react'
+import Navbar from '../share/Navbar'
+import { Label } from '../ui/label'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
+import { Loader2Icon } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { toast } from '@/hooks/use-toast'
+import { ToastAction } from '../ui/toast'
+import { USER_API_END_POINT } from '../utils/constant'
+import axios from 'axios'
 
-const SignUp = () => {
+const CreateUserAdmin = () => {
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm();
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { loading, user } = useSelector(store => store.auth);
-    const dispatch = useDispatch();
     const onSubmit = async (data) => {
         const formData = new FormData();
         formData.append('file', data.file[0]);
@@ -30,10 +26,9 @@ const SignUp = () => {
         formData.append('email', data.email);
         formData.append('password', data.password);
         formData.append('phoneNumber', data.phoneNumber);
-        formData.append('role', 'student');
-
+        formData.append('role', 'recruiter');
         try {
-            dispatch(setLoading(true));
+            setLoading(true)
             const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
@@ -41,7 +36,7 @@ const SignUp = () => {
                 withCredentials: true
             });
             if (res.data.success) {
-                navigate("/login");
+                navigate("/");
                 toast({
                     title: res.data.message,
                     status: "success",
@@ -54,25 +49,21 @@ const SignUp = () => {
             }
         } catch (error) {
             toast({
-                title: error.response.data.message || 'Đăng ký thất bại. Vui lòng thử lại!',
+                title: error.response.data.message,
                 status: "error",
                 action: <ToastAction altText="Try again">Try again</ToastAction>,
             })
         } finally {
-            dispatch(setLoading(false));
+            setLoading(false)
         }
-    };
-    useEffect(() => {
-        if (user) {
-            navigate('/')
-        }
-    })
+    }
     return (
         <div>
             <Navbar />
+
             <div className='flex items-center justify-center max-w-7xl mx-auto'>
                 <form className='shadow w-1/2 border border-gray-200 rounded-sm p-4 my-10' onSubmit={handleSubmit(onSubmit)}>
-                    <h1 className='font-bold text-xl mb-5'>Đăng Ký</h1>
+                    <h1 className='font-bold text-xl mb-5'>Tạo tài khoản admin mới</h1>
 
                     <div className='my-2'>
                         <Label htmlFor="fullName">Họ và Tên</Label>
@@ -117,7 +108,6 @@ const SignUp = () => {
                         {errors.password && <span className="text-red-500">Mật khẩu là bắt buộc</span>}
                     </div>
 
-
                     <div className='my-2'>
                         <Label>Profile</Label>
                         <Input
@@ -127,16 +117,11 @@ const SignUp = () => {
                             className='cursor-pointer'
                         />
                     </div>
-                    {loading ? (
-                        <Button className='w-full my-4'><Loader2 className='mr-2 h-4 w-4 animate-spin' /> Xin đợi 1 chút</Button>
-                    ) : (
-                        <Button className='w-full my-4' type="submit">Đăng Ký</Button>
-                    )}
-                    <span>Bạn đã có tài khoản?<Link to="/login" className='text-blue-600 ml-2'>Đăng Nhập</Link></span>
+                    <Button className='w-full my-4' type="submit">Tạo mới</Button>
                 </form>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default SignUp;
+export default CreateUserAdmin
