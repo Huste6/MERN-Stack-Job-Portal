@@ -23,6 +23,14 @@ const userSchema = new mongoose.Schema({
         enum: ['student', 'recruiter'],
         required: true,
     },
+    locked: {
+        type: Boolean,
+        default: false
+    },
+    deleted: {
+        type: Boolean,
+        default: false
+    },
     profile: {
         bio: {
             type: String

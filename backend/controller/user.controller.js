@@ -40,7 +40,9 @@ export const register = async (req, res) => {
             profilePhoto = cloudResponse.secure_url;
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({
+            email
+        });
         if (user) {
             return res.status(400).json({
                 message: "User already exists with this email!",
@@ -94,6 +96,21 @@ export const login = async (req, res) => {
         if (!user) {
             return res.status(400).json({
                 message: "Password or Email incorrect!",
+                success: false
+            })
+        }
+
+        if (user.locked === true) {
+            return res.status(400).json({
+                message: "Account had been locked!",
+                success: false
+            })
+        }
+
+        //admin
+        if (user.deleted === true) {
+            return res.status(400).json({
+                message: "Account had been deleted!",
                 success: false
             })
         }
@@ -338,14 +355,16 @@ export const resetPassword = async (req, res) => {
 export const updateImageProfile = async (req, res) => {
     const file = req.file;
     const userId = req.id;
-    const user = await User.findOne({_id: userId});
-    if(!file){
+    const user = await User.findOne({
+        _id: userId
+    });
+    if (!file) {
         return res.status(401).json({
             message: 'Image not found!',
             success: false
         })
     }
-    if(!user){
+    if (!user) {
         return res.status(401).json({
             message: 'User not found!',
             success: false
@@ -365,4 +384,94 @@ export const updateImageProfile = async (req, res) => {
         success: true,
         user
     })
+}
+
+//[GET] /admin/listUserAdmin
+export const ListUserAdmin = async (req, res) => {
+    const usersAdmin = await User.find({
+        deleted: false,
+        role: 'recruiter'
+    });
+    const users = await User.find({
+        deleted: false,
+        role: 'student'
+    });
+
+    if (!users || !usersAdmin) {
+        return res.status(401).json({
+            message: 'No account yet',
+            success: false
+        })
+    }
+    return res.status(200).json({
+        success: true,
+        usersAdmin,
+        users
+    })
+}
+
+//[POST] /admin/lockAccount
+export const LockAccount = async (req, res) => {
+    try {
+        const {
+            locked,
+            id
+        } = req.body;
+        const user = await User.findOne({
+            _id: id
+        })
+        if (!user) {
+            return res.status(401).json({
+                message: 'User not found!',
+                success: false
+            })
+        }
+        user.locked = locked;
+        await user.save();
+        return res.status(200).json({
+            message: 'Change status successfully!',
+            success: true
+        })
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Server error',
+            success: false
+        });
+    }
+}
+
+//[POST] /admin/deleteAccount
+export const DeleteAccount = async (req,res) => {
+    try {
+        const {id} = req.body;
+        const user = await User.findOne({
+            _id: id
+        })
+        if(!user) {
+            return res.status(401).json({
+                message: 'User not found!',
+                success: false
+            })
+        }
+        if(user.deleted) {
+            return res.status(401).json({
+                message: 'Account had been deleted!',
+                success: false
+            })
+        }
+        user.deleted = true;
+        await user.save();
+
+        return res.status(200).json({
+            message: 'Deleted successfully!',
+            success: true
+        })
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Server error',
+            success: false
+        });
+    }
 }

@@ -107,7 +107,7 @@ const Navbar = () => {
                         <>
                           <div className='flex w-fit items-center gap-2 cursor-pointer mt-2'>
                             <BookUser />
-                            <Button variant="link"><Link to="/admin/listUser">Danh sách tài khoản admin</Link></Button>
+                            <Button variant="link"><Link to="/admin/listUser">Danh sách tài khoản</Link></Button>
                           </div>
                           <div className='flex w-fit items-center gap-2 cursor-pointer mt-2'>
                             <UserRoundPlus />
