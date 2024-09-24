@@ -102,7 +102,7 @@ export const login = async (req, res) => {
 
         if (user.locked === true) {
             return res.status(400).json({
-                message: "Account had been locked!",
+                message: "Account has been locked!",
                 success: false
             })
         }
@@ -110,7 +110,7 @@ export const login = async (req, res) => {
         //admin
         if (user.deleted === true) {
             return res.status(400).json({
-                message: "Account had been deleted!",
+                message: "Account has been deleted!",
                 success: false
             })
         }
@@ -456,7 +456,7 @@ export const DeleteAccount = async (req,res) => {
         }
         if(user.deleted) {
             return res.status(401).json({
-                message: 'Account had been deleted!',
+                message: 'Account has been deleted!',
                 success: false
             })
         }
