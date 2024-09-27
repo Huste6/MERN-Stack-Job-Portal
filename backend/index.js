@@ -29,7 +29,7 @@ app.use(methodOverride('_method'))
 app.use(bodyParser.urlencoded({ extended: false }))
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: 'https://mern-stack-job-portal-gqgr.onrender.com',
     credentials: true,
 };
 app.use(cors(corsOptions));
