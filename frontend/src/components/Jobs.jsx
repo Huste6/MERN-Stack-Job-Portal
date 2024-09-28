@@ -4,10 +4,12 @@ import FilterCard from './FilterCard'
 import Job from './Job';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
+import GetAllLaterJob from './hooks/GetAllLaterJob';
 const Jobs = () => {
   const { allJobs, selectedValueFilter } = useSelector(store => store.job);
   const [fiterJob, setFilterJob] = useState([]);
-
+  GetAllLaterJob();
+  
   useEffect(() => {
     const filteredJobs = allJobs.length > 0 && allJobs.filter((job) => {
       if (!selectedValueFilter) return true;
