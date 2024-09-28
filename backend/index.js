@@ -10,6 +10,7 @@ import companyRoute from "./routes/company.route.js";
 import jobRoute from "./routes/job.route.js";
 import applicationRoute from "./routes/application.route.js";
 import path from 'path';
+import laterJobRoute from './routes/laterJob.route.js';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company",companyRoute);
 app.use("/api/v1/job",jobRoute);
 app.use("/api/v1/application",applicationRoute);
+app.use("/api/v1/laterJob",laterJobRoute);
 
 app.use(express.static(path.join(_dirname, "/frontend/dist")))
 app.get('*',(req,res)=>{

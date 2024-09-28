@@ -46,7 +46,7 @@ const TableUser = ({ fetchGetAllUser, data, role }) => {
             }
         } catch (error) {
             console.error(error);
-            message.success(error.response?.data?.message)
+            message.error(error.response?.data?.message)
         }
     }
 

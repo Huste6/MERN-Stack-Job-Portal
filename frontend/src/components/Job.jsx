@@ -1,11 +1,18 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { Bookmark } from 'lucide-react'
+import { Bookmark, BookmarkCheck } from 'lucide-react'
 import { Avatar, AvatarImage } from './ui/avatar'
 import { Badge } from './ui/badge'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { JOB_LATER_API_END_POINT } from './utils/constant'
+import { message } from 'antd'
+import GetAllLaterJob from './hooks/GetAllLaterJob'
+import { useSelector } from 'react-redux'
 
 const Job = ({ job }) => {
+  const [save,setSave] = useState(false);
+  const { AllSaveForLater } = useSelector(store => store.saveForLater);
   const navigate = useNavigate();
   const jobId = job?._id;
 
@@ -15,13 +22,46 @@ const Job = ({ job }) => {
   const now = new Date();
   const daynow = now.getUTCDate();
 
+  const handleAddLaterJob = (jobId,companyId) => {
+    try {
+      const fetchApiPostLaterJob = async () => {
+        const res = await axios.post(`${JOB_LATER_API_END_POINT}/post`,{
+          jobId,
+          companyId
+        },{
+          withCredentials: true
+        })
+        if(res.data.success){
+          message.success(res.data.message);
+          setSave(true);
+          GetAllLaterJob();
+        }
+      }
+      fetchApiPostLaterJob();
+    } catch (error) {
+      console.error(error);
+      message.error(error.response?.data?.message);
+    }
+  }
+
+  useEffect(()=>{
+    setSave(AllSaveForLater.some(item => item?.job?._id === jobId));
+  },[]);
+
   return (
     <div className='p-5 rounded-md shadow-xl bg-white border border-gray-200'>
       <div className='flex items-center justify-between'>
         <p className='text-sm text-gray-500'>
           {daynow - day === 0 ? <span>Hôm nay</span> : `${daynow - day} ngày trước`}
         </p>
-        <Button className='rounded-full' variant='outline' size='icon'><Bookmark /></Button>
+        {
+          save ? (
+            <Button className='rounded-full' variant='outline' size='icon'><BookmarkCheck /></Button>
+          ) : (
+            <Button className='rounded-full' variant='outline' size='icon'><Bookmark /></Button>
+          )
+        }
+        
       </div>
 
       <div className='flex items-center gap-2 my-2'>
@@ -48,7 +88,13 @@ const Job = ({ job }) => {
       </div>
       <div className='flex items-center gap-4 mt-4'>
         <Button variant='outline' onClick={() => navigate(`/description/${jobId}`)}>Chi tiết</Button>
-        <Button className='bg-[#7209b7] text-white'>Lưu xem sau</Button>
+        {
+          save ? (
+            <></>
+          ) : (
+            <Button className='bg-[#7209b7] text-white' onClick={() => handleAddLaterJob(job?._id,job?.company?._id)}>Lưu xem sau</Button>
+          ) 
+        }
       </div>
     </div>
   )

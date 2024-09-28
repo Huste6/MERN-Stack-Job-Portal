@@ -14,6 +14,7 @@ import { USER_API_END_POINT } from './utils/constant';
 import { toast } from '@/hooks/use-toast';
 import { ToastAction } from './ui/toast';
 import { setAuthUser } from './redux/authSlice';
+import LaterJobTable from './LaterJobTable';
 
 const isResume = true;
 
@@ -122,6 +123,10 @@ const Profile = () => {
             <div className='max-w-7xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-xl my-5 p-8'>
                 <h1 className='font-bold text-lg my-5'>Công việc đã apply</h1>
                 <AppliedJobTable />
+            </div>
+            <div className='max-w-7xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-xl my-5 p-8'>
+                <h1 className='font-bold text-lg my-5'>Công việc đã lưu</h1>
+                <LaterJobTable />
             </div>
             <UpdateProfileDialog open={open} setOpen={setOpen} />
         </div>
