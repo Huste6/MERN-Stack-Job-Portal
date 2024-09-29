@@ -247,3 +247,36 @@ export const EditJob = async (req, res) => {
         console.log(error);
     }
 }
+
+//admin
+//[DELETE] /api/v1/job/deleteJob
+export const deleteJob = async (req, res) => {
+    try {
+        const {
+            jobId,
+            companyId
+        } = req.body;
+        const existJob = await Job.findOne({
+            _id: jobId,
+            company: companyId
+
+        })
+        if (!existJob) {
+            return res.status(201).json({
+                message: 'Not found Job with this company!',
+                success: false
+            })
+        }
+        await existJob.deleteOne();
+        return res.status(200).json({
+            message: 'Delete successfully!',
+            success: true
+        })
+    } catch (error) {
+        console.error('Error deleting saved job:', error);
+        return res.status(500).json({
+            message: 'An error occurred while deleting the saved job.',
+            success: false
+        });
+    }
+}
