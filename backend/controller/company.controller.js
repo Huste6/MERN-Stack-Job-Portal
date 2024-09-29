@@ -1,6 +1,9 @@
 import {
     Company
 } from "../models/company.model.js";
+import {
+    Job
+} from "../models/job.model.js";
 import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/datauri.js";
 
@@ -134,5 +137,38 @@ export const updateCompany = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+    }
+}
+
+//[DELETE] /api/v1/company/deleteCompany
+export const deleteCompany = async (req, res) => {
+    try {
+        const {
+            companyId
+        } = req.body;
+
+        const existCompany = await Company.findOne({
+            _id: companyId
+        })
+
+        if (!existCompany) {
+            return res.status(201).json({
+                message: 'Not found company!',
+                success: false
+            })
+        }
+        //delete job
+        await Job.deleteMany({
+            company: companyId
+        });
+
+        //delete company
+        await existCompany.deleteOne();
+        return res.status(200).json({
+            message: 'Delete Company successfully!',
+            success: true
+        })
+    } catch (error) {
+        console.error(error);
     }
 }
